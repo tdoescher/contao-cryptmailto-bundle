@@ -1,0 +1,7 @@
+services:
+    tdoescher.cryptmailto_bundle.listener.data_container.add_pallete_callback:
+        class: tdoescher\CryptMailtoBundle\EventListener\DataContainer\AddPalleteCallback
+        autoconfigure: true
+    tdoescher.cryptmailto_bundle.listener.output_frontend_template_listener:
+        class: tdoescher\CryptMailtoBundle\EventListener\OutputFrontendTemplateListener
+        autoconfigure: true
