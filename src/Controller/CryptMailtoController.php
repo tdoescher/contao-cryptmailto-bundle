@@ -13,7 +13,7 @@ class CryptMailtoController
 {
     public function __invoke(Request $request): RedirectResponse
     {
-        $encryptionService = \Contao\System::getContainer()->get('brkwsky.encryption');
+        $encryptionService = \Contao\System::getContainer()->get('plenta.encryption');
 
         return new RedirectResponse('mailto:'.$encryptionService->decryptUrlSafe($request->attributes->get('mailto')), 301);
     }

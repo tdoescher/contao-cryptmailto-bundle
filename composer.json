@@ -1,25 +1,27 @@
 {
-    "name": "tdoescher/cryptmailto-bundle",
-    "description": "Versteckt \"mailto\"-Links hinter einer Weiterleitung",
-    "type": "contao-bundle",
-    "license": "LGPL-3.0-or-later",
-    "authors": [
-        {
-            "name": "Torben Döscher",
-            "homepage": "https://tdoescher.de"
-        }
-    ],
-    "require": {
-        "php": ">=7.4",
-        "contao/core-bundle": "^4.11",
-        "brkwsky/contao-encryption": "^1.0"
-    },
-    "extra": {
-        "contao-manager-plugin": "tdoescher\\CryptMailtoBundle\\ContaoManager\\Plugin"
-    },
-    "autoload": {
-        "psr-4": {
-            "tdoescher\\CryptMailtoBundle\\": "src/"
-        }
+  "name": "tdoescher/cryptmailto-bundle",
+  "description": "Versteckt \"mailto\"-Links hinter einer Weiterleitung",
+  "type": "contao-bundle",
+  "license": "LGPL-3.0-or-later",
+  "authors": [
+    {
+      "name": "Torben Döscher",
+      "email": "mail@tdoescher.de",
+      "homepage": "https://tdoescher.de",
+      "role": "Developer"
     }
+  ],
+  "require": {
+    "php": ">=8.0",
+    "contao/core-bundle": "^4.13 || ^5.0",
+    "plenta/contao-encryption": "^2.0"
+  },
+  "extra": {
+    "contao-manager-plugin": "tdoescher\\CryptMailtoBundle\\ContaoManager\\Plugin"
+  },
+  "autoload": {
+    "psr-4": {
+      "tdoescher\\CryptMailtoBundle\\": "src/"
+    }
+  }
 }

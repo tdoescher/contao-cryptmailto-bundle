@@ -12,7 +12,7 @@ class OutputFrontendTemplateListener
 {
     public function __invoke(string $buffer, string $template): string
     {
-        $encryptionService = \Contao\System::getContainer()->get('brkwsky.encryption');
+        $encryptionService = \Contao\System::getContainer()->get('plenta.encryption');
 
         $buffer = \Contao\StringUtil::decodeEntities($buffer);
 
