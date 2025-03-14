@@ -1,5 +1,6 @@
-# App
-files
+# PHP
+composer.lock
+vendor
 
 # Node.js
 .npm
@@ -11,6 +12,7 @@ package-lock.json
 
 # macOS
 .nova
+.idea
 .vscode
 .DS_Store*
 Icon^M
