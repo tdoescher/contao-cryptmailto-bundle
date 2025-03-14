@@ -1,7 +1,3 @@
-# PHP
-composer.lock
-vendor
-
 # Node.js
 .npm
 node_modules
