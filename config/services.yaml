@@ -13,5 +13,9 @@ services:
         arguments:
             $secret: '%kernel.secret%'
 
+    tdoescher\CryptMailtoBundle\EventListener\MailtoResponseListener:
+        arguments:
+            $insertTagParser: '@contao.insert_tag.parser'
+
     tdoescher\CryptMailtoBundle\Controller\CryptMailtoController:
         public: true
