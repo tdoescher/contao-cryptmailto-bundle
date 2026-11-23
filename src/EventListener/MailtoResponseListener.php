@@ -84,42 +84,78 @@ class MailtoResponseListener
 
     private function replaceLink(array $match): string
     {
-        [$link, $before, $href, $after, $text] = $match;
+        [$link, $before, $href, $after, $content] = $match;
 
-        $href = html_entity_decode($href, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $href = $this->decode($href);
 
         if (!str_starts_with(strtolower($href), 'mailto:')) {
             return $link;
         }
 
-        // Ein versehentlich auch im href notiertes "@@" korrigieren
-        $email = str_replace('@@', '@', substr($href, 7));
+        $stringUtil = $this->framework->getAdapter(StringUtil::class);
+        $email = substr($href, 7);
+
+        // "@@" im Linkziel: keine Weiterleitung, nur ein normaler (von Contao verschleierter) mailto-Link
+        if (str_contains($email, '@@')) {
+            $href = $stringUtil->encodeEmail('mailto:'.str_replace('@@', '@', $email));
+
+            return \sprintf('<a%s href="%s"%s>%s</a>', $before, $href, $after, $this->replaceInText($content, false));
+        }
 
         $url = $this->urlGenerator->generate(CryptMailtoController::class, [
             'mailto' => $this->encrypter->encrypt($email),
         ]);
 
-        $attributes = $this->removeAttributes($before.$after);
-        $plainText = $this->normalizeText($text);
-
-        if (preg_match(self::DOUBLE_AT_PATTERN, $plainText)) {
-            // "@@" im Linktext: Adresse sichtbar lassen, nur verschleiern
-            $text = $this->framework->getAdapter(StringUtil::class)->encodeEmail(str_replace('@@', '@', $plainText));
-        } elseif (preg_match(self::EMAIL_PATTERN, $plainText) && '' !== ($replacement = $this->getReplacementText())) {
-            $text = $replacement;
-        }
-
-        return \sprintf('<a href="%s"%s>%s</a>', $url, $attributes, $text);
+        return \sprintf('<a href="%s"%s>%s</a>', $url, $this->removeAttributes($before.$after), $this->replaceInText($content, true));
     }
 
-    private function normalizeText(string $text): string
+    /**
+     * Ersetzt E-Mail-Adressen nur in den Textknoten des Linkinhalts, damit
+     * Markup wie Icons (z. B. aus {{svgicon::…}}) oder <span>-Elemente erhalten bleibt.
+     *
+     * - "info@@example.com" wird zu einer verschleierten, sichtbaren Adresse
+     * - "info@example.com" wird (falls konfiguriert) durch den Ersatztext ersetzt
+     */
+    private function replaceInText(string $content, bool $useReplacement): string
     {
-        $text = html_entity_decode(strip_tags($text), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $parts = preg_split('/(<[^>]*>)/', $content, -1, PREG_SPLIT_DELIM_CAPTURE) ?: [$content];
 
+        foreach ($parts as $i => $part) {
+            if ('' === $part || '<' === $part[0]) {
+                continue;
+            }
+
+            $text = $this->normalize($this->decode($part));
+
+            if (preg_match(self::DOUBLE_AT_PATTERN, $text)) {
+                $parts[$i] = $this->keepWhitespace($part, $this->framework->getAdapter(StringUtil::class)->encodeEmail(str_replace('@@', '@', $text)));
+            } elseif ($useReplacement && preg_match(self::EMAIL_PATTERN, $text) && '' !== ($replacement = $this->getReplacementText())) {
+                $parts[$i] = $this->keepWhitespace($part, $replacement);
+            }
+        }
+
+        return implode('', $parts);
+    }
+
+    private function decode(string $value): string
+    {
+        return html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
+    private function normalize(string $text): string
+    {
         // Geschützte Leerzeichen und unsichtbare Zeichen (z. B. aus TinyMCE) entfernen
         $text = preg_replace('/[\x{00A0}\x{00AD}\x{200B}-\x{200D}\x{FEFF}]/u', '', $text) ?? $text;
 
         return trim($text);
+    }
+
+    private function keepWhitespace(string $original, string $replacement): string
+    {
+        preg_match('/^(\s*)/', $original, $lead);
+        preg_match('/(\s*)$/', $original, $trail);
+
+        return $lead[1].$replacement.$trail[1];
     }
 
     private function getReplacementText(): string

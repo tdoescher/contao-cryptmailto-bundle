@@ -8,7 +8,12 @@ Im Ersatztext können Insert-Tags verwendet werden, z. B. für mehrsprachige Sei
 {{iflng::de}}E-Mail schreiben{{iflng::en}}Send e-mail{{iflng}}
 ```
 
-Beispiel für die `@@`-Schreibweise: Linktext `info@@example.com` mit Ziel `mailto:info@example.com` – der Link wird verschlüsselt, als Text erscheint weiterhin `info@example.com` (verschleiert).
+### `@@`-Schreibweise
+
+- **`@@` im Linktext** (z. B. `info@@example.com`): Die Adresse bleibt sichtbar (von Contao verschleiert) und wird nicht durch den Ersatztext ersetzt.
+- **`@@` im Linkziel** (z. B. `mailto:info@@example.com`): Der Link wird nicht über die Weiterleitung geführt, sondern bleibt ein normaler, von Contao verschleierter `mailto:`-Link.
+
+Markup innerhalb des Links (z. B. Icons per `{{svgicon::…}}` oder `<span>`-Elemente) bleibt erhalten; ersetzt werden nur die Textstellen mit der E-Mail-Adresse.
 
 ## Voraussetzungen
 
