@@ -1,3 +1,0 @@
-tdoescher.cryptmailto_bundle.controller.crypt_mailto_controller:
-    resource: tdoescher\CryptMailtoBundle\Controller\CryptMailtoController
-    type: annotation

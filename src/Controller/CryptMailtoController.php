@@ -1,20 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace tdoescher\CryptMailtoBundle\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Attribute\Route;
+use tdoescher\CryptMailtoBundle\Encryption\MailtoEncrypter;
 
-/**
- * @Route("/redirect/{mailto}", defaults={"_scope" = "frontend"}, name=CryptMailtoController::class)
- */
+#[Route('/redirect/{mailto}', name: self::class, requirements: ['mailto' => '[A-Za-z0-9_-]+'], defaults: ['_scope' => 'frontend'])]
 class CryptMailtoController
 {
-    public function __invoke(Request $request): RedirectResponse
+    public function __construct(private readonly MailtoEncrypter $encrypter)
     {
-        $encryptionService = \Contao\System::getContainer()->get('plenta.encryption');
+    }
 
-        return new RedirectResponse('mailto:'.$encryptionService->decryptUrlSafe($request->attributes->get('mailto')), 301);
+    public function __invoke(string $mailto): RedirectResponse
+    {
+        $email = $this->encrypter->decrypt($mailto);
+
+        if (null === $email || '' === $email) {
+            throw new NotFoundHttpException('Invalid mailto link.');
+        }
+
+        $response = new RedirectResponse('mailto:'.$email, 301);
+        $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
+
+        return $response;
     }
 }

@@ -1,0 +1,17 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    tdoescher\CryptMailtoBundle\:
+        resource: ../src/
+        exclude:
+            - ../src/ContaoManager/
+            - ../src/CryptMailtoBundle.php
+
+    tdoescher\CryptMailtoBundle\Encryption\MailtoEncrypter:
+        arguments:
+            $secret: '%kernel.secret%'
+
+    tdoescher\CryptMailtoBundle\Controller\CryptMailtoController:
+        public: true

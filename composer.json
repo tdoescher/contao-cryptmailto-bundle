@@ -12,9 +12,9 @@
     }
   ],
   "require": {
-    "php": ">=8.0",
-    "contao/core-bundle": "^4.13 || ^5.0",
-    "plenta/contao-encryption": "^2.0"
+    "php": "^8.1",
+    "ext-sodium": "*",
+    "contao/core-bundle": "^5.3 || ^6.0"
   },
   "extra": {
     "contao-manager-plugin": "tdoescher\\CryptMailtoBundle\\ContaoManager\\Plugin"
